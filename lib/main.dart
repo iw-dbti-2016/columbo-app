@@ -1,18 +1,15 @@
 import 'dart:convert';
 
+import 'package:TravelCompanion/models/report.dart';
 import 'package:TravelCompanion/models/serializers.dart';
 import 'package:TravelCompanion/models/trip.dart';
-import 'package:TravelCompanion/screens/drafts/drafts.dart';
-import 'package:TravelCompanion/screens/feed/feed.dart';
-import 'package:TravelCompanion/screens/profile/profile.dart';
-import 'package:TravelCompanion/screens/trip/triplist.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 
-import 'routes.dart';
+import 'screens/lists/report_list.dart';
+import 'screens/lists/trip_list.dart';
 import 'theme/style.dart';
 
 void main() => runApp(TravelCompanion());
@@ -24,8 +21,6 @@ class TravelCompanion extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: const HomePage(title: 'TravelCompanion'),
       theme: theme,
-//      initialRoute: '/trip',
-//      onGenerateRoute: onGenerateRoutes,
     );
   }
 }
@@ -41,12 +36,60 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Future<dynamic> _trips;
+  int _selectedNavBarIndex;
 
   @override
   void initState() {
     super.initState();
 
-    _trips = getTrips();
+    _selectedNavBarIndex = 0;
+    _trips = _getData();
+  }
+
+  Future<dynamic> _getData() {
+    switch (_selectedNavBarIndex) {
+      case 0:
+        return getTrips();
+      case 1:
+        return getReports();
+      default:
+        throw Exception('Undefined page index');
+    }
+  }
+
+  void _onNavbarItemTapped(int index) {
+    setState(() {
+      _selectedNavBarIndex = index;
+    });
+  }
+
+  Widget _createBottomNavigationBar() {
+    return BottomNavigationBar(
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: Icon(Icons.directions_car),
+          title: Text("Trips"),
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.folder),
+          title: Text("Reports"),
+        ),
+      ],
+      currentIndex: _selectedNavBarIndex,
+      selectedItemColor: Colors.black,
+      onTap: _onNavbarItemTapped,
+    );
+  }
+
+  Widget _createPage(dynamic data) {
+    switch (_selectedNavBarIndex) {
+      case 0:
+        return TripList(data);
+      case 1:
+        return ReportList(data);
+      default:
+        throw Exception('Undefined page index');
+    }
   }
 
   @override
@@ -55,58 +98,24 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
+      bottomNavigationBar: _createBottomNavigationBar(),
       body: Center(
         child: FutureBuilder<dynamic>(
-          future: getTrips(),
+          future: _getData(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done &&
                 snapshot.hasData) {
               return RefreshIndicator(
                 onRefresh: () {
+                  final trips = _getData();
+
                   setState(() {
-                    _trips = getTrips();
+                    _trips = trips;
                   });
 
-                  return;
+                  return trips;
                 },
-                child: ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: [
-                    for (Trip item in snapshot.data)
-                      Column(
-                        children: [
-                          ListTile(
-                            title: Text(item.name),
-                            contentPadding: const EdgeInsets.all(5.0),
-                            key: Key(item.id.toString()),
-                            leading: Icon(Icons.directions_car),
-                            subtitle: Column(
-                              children: <Widget>[
-                                Text(item.description),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Text(item.startDate),
-                                    Text(item.endDate),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                          const Divider(),
-                        ],
-                      ),
-                    IconButton(
-                      icon: Icon(Icons.refresh),
-                      onPressed: () {
-                        setState(() {
-                          _trips = getTrips();
-                        });
-                      },
-                    )
-                  ],
-                ),
+                child: _createPage(snapshot.data),
               );
             } else if (snapshot.hasError) {
               return Column(
@@ -135,113 +144,32 @@ class _HomePageState extends State<HomePage> {
 }
 
 Future<dynamic> getTrips() async {
-  final response = await http.get('http://127.0.0.1:8000/api/v1/trips');
-
-  if (response.statusCode == 200) {
-    final decoded = json.decode(response.body);
-
-    return decoded
-        .map((dynamic map) =>
-            standardSerializers.deserializeWith(Trip.serializer, map))
-        .toList();
-  } else {
-    throw Exception('Failed to load trips');
-  }
+  final responseBody = await getResource('trips');
+  return responseBody
+      .map((dynamic map) =>
+          standardSerializers.deserializeWith(Trip.serializer, map))
+      .toList();
 }
 
-//class MyHomePage extends StatefulWidget {
-//  const MyHomePage({Key key, this.title}) : super(key: key);
-//
-//  final String title;
-//
-//  @override
-//  _MyHomePageState createState() => _MyHomePageState();
-//}
-//
-//class _MyHomePageState extends State<MyHomePage> {
-//  var _activeIndex = 0;
-//  final _pageCount = 4;
-//
-//  Widget _selectPage() {
-//    return Stack(
-//      children: List<Widget>.generate(_pageCount, (int index) {
-//        return IgnorePointer(
-//          ignoring: index != _activeIndex,
-//          child: Opacity(
-//            opacity: _activeIndex == index ? 1.0 : 0.0,
-//            child: Navigator(
-//              onGenerateRoute: (RouteSettings settings) {
-//                return MaterialPageRoute(
-//                  builder: (_) => _page(index),
-//                  settings: settings,
-//                );
-//              },
-//            ),
-//          ),
-//        );
-//      }),
-//    );
-//  }
-//
-//  Widget _page(int index) {
-//    switch (index) {
-//      case 0:
-//        return Feed();
-//      case 1:
-//        return TripList();
-//      case 2:
-//        return Drafts();
-//      case 3:
-//        return Profile();
-//    }
-//
-//    return const Text("ERROR");
-//  }
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return Scaffold(
-//      appBar: AppBar(
-//        title: Text(widget.title),
-//      ),
-//      body: _selectPage(),
-//
-//      bottomNavigationBar: BottomNavigationBar(
-//        currentIndex: _activeIndex,
-//        backgroundColor: Colors.black,
-//        type: BottomNavigationBarType.fixed,
-//        items: [
-//          BottomNavigationBarItem(
-//            icon: Icon(Icons.home),
-//            title: const Text("Feed"),
-//            backgroundColor: Colors.black,
-//          ),
-//          BottomNavigationBarItem(
-//            icon: Icon(Icons.list),
-//            title: const Text("Trips"),
-//            backgroundColor: Colors.black,
-//          ),
-//          BottomNavigationBarItem(
-//            icon: Icon(Icons.layers),
-//            title: const Text("Drafts"),
-//            backgroundColor: Colors.black,
-//          ),
-//          BottomNavigationBarItem(
-//            icon: Icon(Icons.person),
-//            title: const Text("Profile"),
-//            backgroundColor: Colors.black,
-//          ),
-//        ],
-//        showSelectedLabels: true,
-//        showUnselectedLabels: false,
-//        unselectedItemColor: Colors.grey[600],
-//        selectedItemColor: Colors.white,
-//        onTap: (index) {
-//          setState(() {
-//            _activeIndex = index;
-//          });
-//        },
-//      ), // This trailing comma makes auto-formatting nicer for build methods.
-//    );
-//  }
-//}
+Future<dynamic> getReports() async {
+  final responseBody = await getResource('reports');
+  return responseBody
+      .map((dynamic map) =>
+          standardSerializers.deserializeWith(Report.serializer, map))
+      .toList();
+}
+
+Future<dynamic> getResource(String url) async {
+  final response = await http.get('http://127.0.0.1:8000/api/v1/$url');
+
+  if (response.statusCode != 200) {
+    handleError(response);
+    return;
+  }
+
+  return json.decode(response.body);
+}
+
+void handleError(dynamic response) {
+  throw Exception('Failed to load resource');
+}
