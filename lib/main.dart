@@ -10,7 +10,9 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 import 'models/location.dart';
+import 'models/poi.dart';
 import 'screens/lists/location_list.dart';
+import 'screens/lists/poi_list.dart';
 import 'screens/lists/report_list.dart';
 import 'screens/lists/section_list.dart';
 import 'screens/lists/trip_list.dart';
@@ -128,8 +130,8 @@ class _HomePageState extends State<HomePage> {
                     topRight: Radius.circular(40.0),
                     bottomRight: Radius.circular(40.0),
                   ),
-                  child: ListTile(
-                    title: const Text('Reports'),
+                  child: const ListTile(
+                    title: Text('Reports'),
                     leading: Icon(
                       Icons.folder_open,
                       color: Colors.black,
@@ -153,7 +155,7 @@ class _HomePageState extends State<HomePage> {
                   child: const ListTile(
                     title: Text('Sections'),
                     leading: Icon(
-                      Icons.description,
+                      Icons.format_align_left,
                       color: Colors.black,
                     ),
                   ),
@@ -176,6 +178,28 @@ class _HomePageState extends State<HomePage> {
                     title: Text('Locations'),
                     leading: Icon(
                       Icons.location_on,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      _listData = null;
+                      _selectedNavBarIndex = 4;
+                    });
+                    _refreshList();
+                    Navigator.pop(context);
+                  },
+                  highlightColor: Colors.green[100],
+                  borderRadius: const BorderRadius.only(
+                    topRight: Radius.circular(40.0),
+                    bottomRight: Radius.circular(40.0),
+                  ),
+                  child: const ListTile(
+                    title: Text('Points of Interest'),
+                    leading: Icon(
+                      Icons.star_border,
                       color: Colors.black,
                     ),
                   ),
@@ -207,7 +231,6 @@ class _HomePageState extends State<HomePage> {
 
   Widget _createBottomNavigationBar() {
     return BottomNavigationBar(
-      backgroundColor: Colors.black,
       fixedColor: Colors.black,
       unselectedItemColor: Colors.black,
       items: const <BottomNavigationBarItem>[
@@ -216,17 +239,21 @@ class _HomePageState extends State<HomePage> {
           title: Text("Trips"),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.folder),
+          icon: Icon(Icons.folder_open),
           title: Text("Reports"),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.description),
+          icon: Icon(Icons.format_align_left),
           title: Text('Sections'),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.location_on),
           title: Text('Locations'),
-        )
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.star_border),
+          title: Text('POIs'),
+        ),
       ],
       currentIndex: _selectedNavBarIndex,
 //      selectedItemColor: Colors.black,
@@ -258,6 +285,8 @@ class _HomePageState extends State<HomePage> {
         return SectionList(_listData);
       case 3:
         return LocationList(_listData);
+      case 4:
+        return PoiList(_listData);
       default:
         throw Exception('Undefined page index');
     }
@@ -273,6 +302,8 @@ class _HomePageState extends State<HomePage> {
         return getSections();
       case 3:
         return getLocations();
+      case 4:
+        return getPois();
       default:
         throw Exception('Undefined page index');
     }
@@ -307,7 +338,15 @@ Future<dynamic> getLocations() async {
   final responseBody = await getResource('locations');
   return responseBody
       .map((dynamic map) =>
-      standardSerializers.deserializeWith(Location.serializer, map))
+          standardSerializers.deserializeWith(Location.serializer, map))
+      .toList();
+}
+
+Future<dynamic> getPois() async {
+  final responseBody = await getResource('pois');
+  return responseBody
+      .map((dynamic map) =>
+          standardSerializers.deserializeWith(Poi.serializer, map))
       .toList();
 }
 

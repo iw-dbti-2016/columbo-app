@@ -9,7 +9,10 @@ abstract class Poi implements Built<Poi, PoiBuilder> {
 
   int get id;
 
-  BuiltList<int> get coordinates;
+  BuiltList<double> get coordinates;
+
+  @BuiltValueField(wireName: 'map_zoom')
+  double get mapZoom;
 
   String get name;
 

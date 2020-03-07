@@ -1,19 +1,19 @@
-import 'package:TravelCompanion/models/section.dart';
+import 'package:TravelCompanion/models/poi.dart';
 import 'package:flutter/material.dart';
 
-class SectionList extends StatefulWidget {
-  const SectionList(this.sections, {Key key}) : super(key: key);
+class PoiList extends StatefulWidget {
+  const PoiList(this.pois, {Key key}) : super(key: key);
 
-  final dynamic sections;
+  final dynamic pois;
 
   @override
-  _SectionListState createState() => _SectionListState();
+  _PoiListState createState() => _PoiListState();
 }
 
-class _SectionListState extends State<SectionList> {
+class _PoiListState extends State<PoiList> {
   @override
   Widget build(BuildContext context) {
-    if (widget.sections == null) {
+    if (widget.pois == null) {
       return const Center(
         child: CircularProgressIndicator(),
       );
@@ -21,20 +21,19 @@ class _SectionListState extends State<SectionList> {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
-          for (Section item in widget.sections)
+          for (Poi item in widget.pois)
             Column(
               children: [
                 ListTile(
-                  title: Text("${item.startTime} - ${item.endTime}"),
+                  title: Text(item.name),
                   contentPadding: const EdgeInsets.all(5.0),
                   key: Key(item.id.toString()),
-                  leading: const Icon(Icons.format_align_left),
+                  leading: const Icon(Icons.star_border),
                   subtitle: Column(
                     children: <Widget>[
-                      Text(item.content),
-                      Text(item.imageCaption),
-                      Text(item.temperature.toString()),
-                      Text(item.publishedAt),
+                      Text(item.coordinates.toString()),
+                      Text(item.mapZoom.toString()),
+                      Text(item.info),
                     ],
                   ),
                 ),
