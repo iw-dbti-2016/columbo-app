@@ -16,6 +16,9 @@ abstract class Report implements Built<Report, ReportBuilder> {
   @nullable
   String get description;
 
+  @BuiltValueField(wireName: 'published_at')
+  String get publishedAt;
+
   factory Report([void Function(ReportBuilder) updates]) = _$Report;
   Report._();
 }

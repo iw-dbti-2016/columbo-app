@@ -32,6 +32,9 @@ abstract class Section implements Built<Section, SectionBuilder> {
   @nullable
   double get temperature;
 
+  @BuiltValueField(wireName: 'published_at')
+  String get publishedAt;
+
   factory Section([void Function(SectionBuilder) updates]) = _$Section;
   Section._();
 }

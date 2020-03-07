@@ -38,7 +38,8 @@ class _TripListState extends State<TripList> {
                           Text(item.startDate),
                           Text(item.endDate),
                         ],
-                      )
+                      ),
+                      Text(item.publishedAt),
                     ],
                   ),
                 ),

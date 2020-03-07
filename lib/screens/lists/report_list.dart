@@ -33,6 +33,7 @@ class _ReportListState extends State<ReportList> {
                     children: <Widget>[
                       Text(item.description),
                       Text(item.date),
+                      Text(item.publishedAt),
                     ],
                   ),
                 ),
