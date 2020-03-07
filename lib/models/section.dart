@@ -30,7 +30,7 @@ abstract class Section implements Built<Section, SectionBuilder> {
   String get endTime;
 
   @nullable
-  double get temperature;
+  int get temperature;
 
   @BuiltValueField(wireName: 'published_at')
   String get publishedAt;

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:TravelCompanion/models/report.dart';
+import 'package:TravelCompanion/models/section.dart';
 import 'package:TravelCompanion/models/serializers.dart';
 import 'package:TravelCompanion/models/trip.dart';
 import 'package:flutter/foundation.dart';
@@ -9,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 import 'screens/lists/report_list.dart';
+import 'screens/lists/section_list.dart';
 import 'screens/lists/trip_list.dart';
 import 'theme/style.dart';
 
@@ -62,6 +64,120 @@ class _HomePageState extends State<HomePage> {
           child: _createPage(), //snapshot.data),
         ),
       ),
+      drawer: Drawer(
+        child: Scrollbar(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: ListView(
+              children: <Widget>[
+                ListTile(
+                  title: Text(
+                    'TravelCompanion',
+                    style: TextStyle(
+                      color: Colors.green[600],
+                      fontSize: 26,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
+                ),
+                const Divider(),
+                const ListTile(
+                  enabled: false,
+                  title: Text('Timeline'),
+                  leading: Icon(
+                    Icons.home,
+//                color: Colors.black,
+                  ),
+                ),
+                const Divider(),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      _listData = null;
+                      _selectedNavBarIndex = 0;
+                    });
+                    _refreshList();
+                    Navigator.pop(context);
+                  },
+                  highlightColor: Colors.green[100],
+                  borderRadius: const BorderRadius.only(
+                    topRight: Radius.circular(40.0),
+                    bottomRight: Radius.circular(40.0),
+                  ),
+                  child: ListTile(
+                    title: const Text('Trips'),
+                    leading: Icon(
+                      Icons.directions_car,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      _listData = null;
+                      _selectedNavBarIndex = 1;
+                    });
+                    _refreshList();
+                    Navigator.pop(context);
+                  },
+                  highlightColor: Colors.green[100],
+                  borderRadius: const BorderRadius.only(
+                    topRight: Radius.circular(40.0),
+                    bottomRight: Radius.circular(40.0),
+                  ),
+                  child: ListTile(
+                    title: const Text('Reports'),
+                    leading: Icon(
+                      Icons.folder_open,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      _listData = null;
+                      _selectedNavBarIndex = 2;
+                    });
+                    _refreshList();
+                    Navigator.pop(context);
+                  },
+                  highlightColor: Colors.green[100],
+                  borderRadius: const BorderRadius.only(
+                    topRight: Radius.circular(40.0),
+                    bottomRight: Radius.circular(40.0),
+                  ),
+                  child: const ListTile(
+                    title: Text('Sections'),
+                    leading: Icon(
+                      Icons.description,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                const Divider(),
+                const ListTile(
+                  enabled: false,
+                  title: Text('Settings'),
+                  leading: Icon(
+                    Icons.settings,
+//                color: Colors.black,
+                  ),
+                ),
+                const ListTile(
+                  enabled: false,
+                  title: Text('Profile'),
+                  leading: Icon(
+                    Icons.account_circle,
+//                color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -76,6 +192,10 @@ class _HomePageState extends State<HomePage> {
           icon: Icon(Icons.folder),
           title: Text("Reports"),
         ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.description),
+          title: Text('Sections'),
+        )
       ],
       currentIndex: _selectedNavBarIndex,
       selectedItemColor: Colors.black,
@@ -103,6 +223,8 @@ class _HomePageState extends State<HomePage> {
         return TripList(_listData);
       case 1:
         return ReportList(_listData);
+      case 2:
+        return SectionList(_listData);
       default:
         throw Exception('Undefined page index');
     }
@@ -114,6 +236,8 @@ class _HomePageState extends State<HomePage> {
         return getTrips();
       case 1:
         return getReports();
+      case 2:
+        return getSections();
       default:
         throw Exception('Undefined page index');
     }
@@ -133,6 +257,14 @@ Future<dynamic> getReports() async {
   return responseBody
       .map((dynamic map) =>
           standardSerializers.deserializeWith(Report.serializer, map))
+      .toList();
+}
+
+Future<dynamic> getSections() async {
+  final responseBody = await getResource('sections');
+  return responseBody
+      .map((dynamic map) =>
+          standardSerializers.deserializeWith(Section.serializer, map))
       .toList();
 }
 
