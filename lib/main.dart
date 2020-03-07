@@ -9,6 +9,8 @@ import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 
+import 'models/location.dart';
+import 'screens/lists/location_list.dart';
 import 'screens/lists/report_list.dart';
 import 'screens/lists/section_list.dart';
 import 'screens/lists/trip_list.dart';
@@ -104,8 +106,8 @@ class _HomePageState extends State<HomePage> {
                     topRight: Radius.circular(40.0),
                     bottomRight: Radius.circular(40.0),
                   ),
-                  child: ListTile(
-                    title: const Text('Trips'),
+                  child: const ListTile(
+                    title: Text('Trips'),
                     leading: Icon(
                       Icons.directions_car,
                       color: Colors.black,
@@ -156,6 +158,28 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      _listData = null;
+                      _selectedNavBarIndex = 3;
+                    });
+                    _refreshList();
+                    Navigator.pop(context);
+                  },
+                  highlightColor: Colors.green[100],
+                  borderRadius: const BorderRadius.only(
+                    topRight: Radius.circular(40.0),
+                    bottomRight: Radius.circular(40.0),
+                  ),
+                  child: const ListTile(
+                    title: Text('Locations'),
+                    leading: Icon(
+                      Icons.location_on,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
                 const Divider(),
                 const ListTile(
                   enabled: false,
@@ -183,6 +207,9 @@ class _HomePageState extends State<HomePage> {
 
   Widget _createBottomNavigationBar() {
     return BottomNavigationBar(
+      backgroundColor: Colors.black,
+      fixedColor: Colors.black,
+      unselectedItemColor: Colors.black,
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.directions_car),
@@ -195,10 +222,14 @@ class _HomePageState extends State<HomePage> {
         BottomNavigationBarItem(
           icon: Icon(Icons.description),
           title: Text('Sections'),
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.location_on),
+          title: Text('Locations'),
         )
       ],
       currentIndex: _selectedNavBarIndex,
-      selectedItemColor: Colors.black,
+//      selectedItemColor: Colors.black,
       onTap: _onNavbarItemTapped,
     );
   }
@@ -225,6 +256,8 @@ class _HomePageState extends State<HomePage> {
         return ReportList(_listData);
       case 2:
         return SectionList(_listData);
+      case 3:
+        return LocationList(_listData);
       default:
         throw Exception('Undefined page index');
     }
@@ -238,6 +271,8 @@ class _HomePageState extends State<HomePage> {
         return getReports();
       case 2:
         return getSections();
+      case 3:
+        return getLocations();
       default:
         throw Exception('Undefined page index');
     }
@@ -265,6 +300,14 @@ Future<dynamic> getSections() async {
   return responseBody
       .map((dynamic map) =>
           standardSerializers.deserializeWith(Section.serializer, map))
+      .toList();
+}
+
+Future<dynamic> getLocations() async {
+  final responseBody = await getResource('locations');
+  return responseBody
+      .map((dynamic map) =>
+      standardSerializers.deserializeWith(Location.serializer, map))
       .toList();
 }
 
