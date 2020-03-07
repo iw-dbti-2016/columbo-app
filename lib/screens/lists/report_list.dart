@@ -13,28 +13,34 @@ class ReportList extends StatefulWidget {
 class _ReportListState extends State<ReportList> {
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      children: [
-        for (Report item in widget.reports)
-          Column(
-            children: [
-              ListTile(
-                title: Text(item.title),
-                contentPadding: const EdgeInsets.all(5.0),
-                key: Key(item.id.toString()),
-                leading: const Icon(Icons.folder),
-                subtitle: Column(
-                  children: <Widget>[
-                    Text(item.description),
-                    Text(item.date),
-                  ],
+    if (widget.reports == null) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    } else {
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          for (Report item in widget.reports)
+            Column(
+              children: [
+                ListTile(
+                  title: Text(item.title),
+                  contentPadding: const EdgeInsets.all(5.0),
+                  key: Key(item.id.toString()),
+                  leading: const Icon(Icons.folder),
+                  subtitle: Column(
+                    children: <Widget>[
+                      Text(item.description),
+                      Text(item.date),
+                    ],
+                  ),
                 ),
-              ),
-              const Divider(),
-            ],
-          ),
-      ],
-    );
+                const Divider(),
+              ],
+            ),
+        ],
+      );
+    }
   }
 }

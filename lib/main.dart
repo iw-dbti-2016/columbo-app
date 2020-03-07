@@ -35,7 +35,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Future<dynamic> _trips;
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
+  dynamic _listData;
   int _selectedNavBarIndex;
 
   @override
@@ -43,24 +45,24 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     _selectedNavBarIndex = 0;
-    _trips = _getData();
+    _refreshList();
   }
 
-  Future<dynamic> _getData() {
-    switch (_selectedNavBarIndex) {
-      case 0:
-        return getTrips();
-      case 1:
-        return getReports();
-      default:
-        throw Exception('Undefined page index');
-    }
-  }
-
-  void _onNavbarItemTapped(int index) {
-    setState(() {
-      _selectedNavBarIndex = index;
-    });
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      bottomNavigationBar: _createBottomNavigationBar(),
+      body: Center(
+        child: RefreshIndicator(
+          key: _refreshIndicatorKey,
+          onRefresh: _refreshList,
+          child: _createPage(), //snapshot.data),
+        ),
+      ),
+    );
   }
 
   Widget _createBottomNavigationBar() {
@@ -81,65 +83,40 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _createPage(dynamic data) {
+  void _onNavbarItemTapped(int index) {
+    setState(() {
+      _listData = null;
+      _selectedNavBarIndex = index;
+    });
+    _refreshList();
+  }
+
+  Future<void> _refreshList() async {
+    return _getData().then((listData) => setState(() {
+          _listData = listData;
+        }));
+  }
+
+  Widget _createPage() {
     switch (_selectedNavBarIndex) {
       case 0:
-        return TripList(data);
+        return TripList(_listData);
       case 1:
-        return ReportList(data);
+        return ReportList(_listData);
       default:
         throw Exception('Undefined page index');
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      bottomNavigationBar: _createBottomNavigationBar(),
-      body: Center(
-        child: FutureBuilder<dynamic>(
-          future: _getData(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done &&
-                snapshot.hasData) {
-              return RefreshIndicator(
-                onRefresh: () {
-                  final trips = _getData();
-
-                  setState(() {
-                    _trips = trips;
-                  });
-
-                  return trips;
-                },
-                child: _createPage(snapshot.data),
-              );
-            } else if (snapshot.hasError) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("ERROR"),
-                  IconButton(
-                    iconSize: 32,
-                    icon: Icon(Icons.refresh),
-                    onPressed: () {
-                      setState(() {
-                        _trips = getTrips();
-                      });
-                    },
-                  )
-                ],
-              );
-            }
-
-            return const CircularProgressIndicator();
-          },
-        ),
-      ),
-    );
+  Future<dynamic> _getData() {
+    switch (_selectedNavBarIndex) {
+      case 0:
+        return getTrips();
+      case 1:
+        return getReports();
+      default:
+        throw Exception('Undefined page index');
+    }
   }
 }
 
