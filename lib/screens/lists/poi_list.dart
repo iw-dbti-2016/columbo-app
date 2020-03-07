@@ -1,4 +1,4 @@
-import 'package:TravelCompanion/models/poi.dart';
+import 'package:Columbo/models/poi.dart';
 import 'package:flutter/material.dart';
 
 class PoiList extends StatefulWidget {

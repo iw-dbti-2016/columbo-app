@@ -1,8 +1,8 @@
-import 'package:TravelCompanion/screens/login/login.dart';
-import 'package:TravelCompanion/screens/registration/registration.dart';
-import 'package:TravelCompanion/screens/report/report.dart';
-import 'package:TravelCompanion/screens/section/section.dart';
-import 'package:TravelCompanion/screens/trip/trip.dart';
+import 'package:Columbo/screens/login/login.dart';
+import 'package:Columbo/screens/registration/registration.dart';
+import 'package:Columbo/screens/report/report.dart';
+import 'package:Columbo/screens/section/section.dart';
+import 'package:Columbo/screens/trip/trip.dart';
 
 import 'package:flutter/material.dart';
 

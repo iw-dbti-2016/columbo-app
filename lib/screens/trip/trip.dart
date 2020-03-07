@@ -1,7 +1,7 @@
-import 'package:TravelCompanion/screens/payment/paymentlist.dart';
-import 'package:TravelCompanion/screens/plan/planlist.dart';
-import 'package:TravelCompanion/screens/trip/members.dart';
-import 'package:TravelCompanion/screens/trip/tripinfo.dart';
+import 'package:Columbo/screens/payment/paymentlist.dart';
+import 'package:Columbo/screens/plan/planlist.dart';
+import 'package:Columbo/screens/trip/members.dart';
+import 'package:Columbo/screens/trip/tripinfo.dart';
 
 import 'package:flutter/material.dart';
 

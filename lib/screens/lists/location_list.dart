@@ -1,4 +1,4 @@
-import 'package:TravelCompanion/models/location.dart';
+import 'package:Columbo/models/location.dart';
 import 'package:flutter/material.dart';
 
 class LocationList extends StatefulWidget {

@@ -1,10 +1,11 @@
 import 'dart:convert';
 
-import 'package:TravelCompanion/models/report.dart';
-import 'package:TravelCompanion/models/section.dart';
-import 'package:TravelCompanion/models/serializers.dart';
-import 'package:TravelCompanion/models/trip.dart';
+import 'package:Columbo/models/report.dart';
+import 'package:Columbo/models/section.dart';
+import 'package:Columbo/models/serializers.dart';
+import 'package:Columbo/models/trip.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -18,14 +19,22 @@ import 'screens/lists/section_list.dart';
 import 'screens/lists/trip_list.dart';
 import 'theme/style.dart';
 
-void main() => runApp(TravelCompanion());
+void main() => runApp(Columbo());
 
-class TravelCompanion extends StatelessWidget {
+class Columbo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle.dark.copyWith(
+        statusBarColor: Colors.white,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.light,
+      ),
+    );
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const HomePage(title: 'TravelCompanion'),
+      home: const HomePage(title: 'Columbo'),
       theme: theme,
     );
   }

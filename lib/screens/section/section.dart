@@ -1,5 +1,5 @@
-import 'package:TravelCompanion/screens/location/location.dart';
-import 'package:TravelCompanion/screens/payment/paymentlist.dart';
+import 'package:Columbo/screens/location/location.dart';
+import 'package:Columbo/screens/payment/paymentlist.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';

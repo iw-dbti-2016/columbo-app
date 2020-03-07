@@ -1,4 +1,4 @@
-import 'package:TravelCompanion/models/trip.dart';
+import 'package:Columbo/models/trip.dart';
 import 'package:flutter/material.dart';
 
 class TripList extends StatefulWidget {

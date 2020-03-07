@@ -1,4 +1,4 @@
-import 'package:TravelCompanion/models/section.dart';
+import 'package:Columbo/models/section.dart';
 import 'package:flutter/material.dart';
 
 class SectionList extends StatefulWidget {

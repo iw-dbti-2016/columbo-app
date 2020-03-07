@@ -1,4 +1,4 @@
-# travel_companion_app
+# Columbo app
 
 ## Useful commands
 

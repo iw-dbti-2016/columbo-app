@@ -1,4 +1,4 @@
-import 'package:TravelCompanion/models/report.dart';
+import 'package:Columbo/models/report.dart';
 import 'package:flutter/material.dart';
 
 class ReportList extends StatefulWidget {

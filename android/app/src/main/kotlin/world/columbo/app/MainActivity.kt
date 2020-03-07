@@ -1,4 +1,4 @@
-package com.example.travel_companion_app
+package world.columbo.app
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity
