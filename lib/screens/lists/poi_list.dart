@@ -1,19 +1,50 @@
-import 'package:Columbo/models/poi.dart';
 import 'package:flutter/material.dart';
 
-class PoiList extends StatefulWidget {
-  const PoiList(this.pois, {Key key}) : super(key: key);
+import 'package:Columbo/models/poi.dart';
+import 'package:Columbo/widgets/columbo_scaffold.dart';
+import 'package:Columbo/services/network.dart';
 
-  final dynamic pois;
+class PoiList extends StatefulWidget {
+  const PoiList({Key key}) : super(key: key);
 
   @override
   _PoiListState createState() => _PoiListState();
 }
 
 class _PoiListState extends State<PoiList> {
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
+  dynamic pois;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _refreshList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (widget.pois == null) {
+    return ColumboScaffold(
+      child: Center(
+        child: RefreshIndicator(
+          key: _refreshIndicatorKey,
+          onRefresh: _refreshList,
+          child: _buildList(),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _refreshList() async {
+    return getResourceList('pois', Poi.serializer)
+        .then((listData) => setState(() {
+              pois = listData;
+            }));
+  }
+
+  Widget _buildList() {
+    if (pois == null) {
       return const Center(
         child: CircularProgressIndicator(),
       );
@@ -21,7 +52,7 @@ class _PoiListState extends State<PoiList> {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
-          for (Poi item in widget.pois)
+          for (Poi item in pois)
             Column(
               children: [
                 ListTile(

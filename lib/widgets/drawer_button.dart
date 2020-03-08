@@ -1,23 +1,17 @@
 import 'package:flutter/material.dart';
 
-class DrawerButton extends StatefulWidget {
-  const DrawerButton({this.icon, this.label, this.onTap, this.index});
+class DrawerButton extends StatelessWidget {
+  const DrawerButton({this.icon, this.label, this.route});
 
   final IconData icon;
   final String label;
-  final Function onTap;
-  final int index;
+  final String route;
 
-  @override
-  _DrawerButtonState createState() => _DrawerButtonState();
-}
-
-class _DrawerButtonState extends State<DrawerButton> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        widget.onTap(widget.index);
+        Navigator.pushReplacementNamed(context, route);
       },
       highlightColor: Colors.green[100],
       borderRadius: const BorderRadius.only(
@@ -25,9 +19,9 @@ class _DrawerButtonState extends State<DrawerButton> {
         bottomRight: Radius.circular(40.0),
       ),
       child: ListTile(
-        title: Text(widget.label),
+        title: Text(label),
         leading: Icon(
-          widget.icon,
+          icon,
           color: Colors.black,
         ),
       ),

@@ -1,44 +1,40 @@
-import 'package:Columbo/screens/login/login.dart';
-import 'package:Columbo/screens/registration/registration.dart';
-import 'package:Columbo/screens/report/report.dart';
-import 'package:Columbo/screens/section/section.dart';
-import 'package:Columbo/screens/trip/trip.dart';
+import 'package:Columbo/screens/lists/location_list.dart';
+import 'package:Columbo/screens/lists/poi_list.dart';
+import 'package:Columbo/screens/lists/report_list.dart';
+import 'package:Columbo/screens/lists/section_list.dart';
+
+/// This file should holds a map with all the routes
+import 'package:Columbo/screens/lists/trip_list.dart';
 
 import 'package:flutter/material.dart';
 
-/// This file should hold only one map with all the routes
+import 'package:Columbo/screens/auth/forgot_password.dart';
+import 'package:Columbo/screens/auth/login.dart';
+import 'package:Columbo/screens/auth/register.dart';
+import 'package:Columbo/screens/auth/validate_email.dart';
+import 'package:Columbo/screens/timeline.dart';
 
-Route<dynamic> onGenerateRoutes(RouteSettings settings) {
-  Widget screen;
+final Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
+  '/home': (context) => TimeLine(),
 
-  switch (settings.name.toString()) {
-    case "/login":
-      screen = Login();
-      break;
-    case "/registration":
-      screen = Registration();
-      break;
-    case "/trip":
-      screen = Trip();
-      break;
-    case "/report":
-      screen = Report();
-      break;
-    case "/section":
-      screen = Section(settings.arguments as Map<String, dynamic>);
-      break;
-  }
+  // AUTH
+  '/auth/login': (context) => Login(),
+  '/auth/register': (context) => Register(),
+  '/auth/forgot-password': (context) => ForgotPassword(),
+  '/auth/validate-email': (context) => ValidateEmail(),
 
-  return MaterialPageRoute(
-    builder: (context) {
-      return screen;
-    },
-  );
-}
+  // TRIPS
+  '/trips/list': (context) => const TripList(),
 
-//final Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
-//  '/login': (context) => Login(),
-//  '/registration': (context) => Registration(),
-//  '/report': (context) => Report(),
-//  '/section': (context, section) => Section(section),
-//};
+  // REPORTS
+  '/reports/list': (context) => const ReportList(),
+
+  // SECTIONS
+  '/sections/list': (context) => const SectionList(),
+
+  // LOCATIONS
+  '/locations/list': (context) => const LocationList(),
+
+  // POIS
+  '/pois/list': (context) => const PoiList(),
+};

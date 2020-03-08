@@ -1,19 +1,50 @@
-import 'package:Columbo/models/trip.dart';
 import 'package:flutter/material.dart';
 
-class TripList extends StatefulWidget {
-  const TripList(this.trips, {Key key}) : super(key: key);
+import 'package:Columbo/models/trip.dart';
+import 'package:Columbo/widgets/columbo_scaffold.dart';
+import 'package:Columbo/services/network.dart';
 
-  final dynamic trips;
+class TripList extends StatefulWidget {
+  const TripList({Key key}) : super(key: key);
 
   @override
   _TripListState createState() => _TripListState();
 }
 
 class _TripListState extends State<TripList> {
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
+  dynamic trips;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _refreshList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (widget.trips == null) {
+    return ColumboScaffold(
+      child: Center(
+        child: RefreshIndicator(
+          key: _refreshIndicatorKey,
+          onRefresh: _refreshList,
+          child: _buildList(),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _refreshList() async {
+    return getResourceList('trips', Trip.serializer)
+        .then((listData) => setState(() {
+              trips = listData;
+            }));
+  }
+
+  Widget _buildList() {
+    if (trips == null) {
       return const Center(
         child: CircularProgressIndicator(),
       );
@@ -21,7 +52,7 @@ class _TripListState extends State<TripList> {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
-          for (Trip item in widget.trips)
+          for (Trip item in trips)
             Column(
               children: [
                 ListTile(

@@ -1,19 +1,50 @@
-import 'package:Columbo/models/report.dart';
 import 'package:flutter/material.dart';
 
-class ReportList extends StatefulWidget {
-  const ReportList(this.reports, {Key key}) : super(key: key);
+import 'package:Columbo/models/report.dart';
+import 'package:Columbo/widgets/columbo_scaffold.dart';
+import 'package:Columbo/services/network.dart';
 
-  final dynamic reports;
+class ReportList extends StatefulWidget {
+  const ReportList({Key key}) : super(key: key);
 
   @override
   _ReportListState createState() => _ReportListState();
 }
 
 class _ReportListState extends State<ReportList> {
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
+  dynamic reports;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _refreshList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (widget.reports == null) {
+    return ColumboScaffold(
+      child: Center(
+        child: RefreshIndicator(
+          key: _refreshIndicatorKey,
+          onRefresh: _refreshList,
+          child: _buildList(),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _refreshList() async {
+    return getResourceList('reports', Report.serializer)
+        .then((listData) => setState(() {
+              reports = listData;
+            }));
+  }
+
+  Widget _buildList() {
+    if (reports == null) {
       return const Center(
         child: CircularProgressIndicator(),
       );
@@ -21,7 +52,7 @@ class _ReportListState extends State<ReportList> {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
-          for (Report item in widget.reports)
+          for (Report item in reports)
             Column(
               children: [
                 ListTile(

@@ -1,19 +1,50 @@
-import 'package:Columbo/models/section.dart';
 import 'package:flutter/material.dart';
 
-class SectionList extends StatefulWidget {
-  const SectionList(this.sections, {Key key}) : super(key: key);
+import 'package:Columbo/models/section.dart';
+import 'package:Columbo/widgets/columbo_scaffold.dart';
+import 'package:Columbo/services/network.dart';
 
-  final dynamic sections;
+class SectionList extends StatefulWidget {
+  const SectionList({Key key}) : super(key: key);
 
   @override
   _SectionListState createState() => _SectionListState();
 }
 
 class _SectionListState extends State<SectionList> {
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
+  dynamic sections;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _refreshList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (widget.sections == null) {
+    return ColumboScaffold(
+      child: Center(
+        child: RefreshIndicator(
+          key: _refreshIndicatorKey,
+          onRefresh: _refreshList,
+          child: _buildList(),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _refreshList() async {
+    return getResourceList('sections', Section.serializer)
+        .then((listData) => setState(() {
+              sections = listData;
+            }));
+  }
+
+  Widget _buildList() {
+    if (sections == null) {
       return const Center(
         child: CircularProgressIndicator(),
       );
@@ -21,7 +52,7 @@ class _SectionListState extends State<SectionList> {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
-          for (Section item in widget.sections)
+          for (Section item in sections)
             Column(
               children: [
                 ListTile(
