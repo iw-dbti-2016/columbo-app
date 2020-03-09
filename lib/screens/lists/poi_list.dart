@@ -59,7 +59,6 @@ class _PoiListState extends State<PoiList> {
                   title: Text(item.name),
                   contentPadding: const EdgeInsets.all(5.0),
                   key: Key(item.id.toString()),
-                  leading: const Icon(Icons.star_border),
                   subtitle: Column(
                     children: <Widget>[
                       Text(item.coordinates.toString()),

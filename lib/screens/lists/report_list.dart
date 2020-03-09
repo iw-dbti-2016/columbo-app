@@ -59,7 +59,6 @@ class _ReportListState extends State<ReportList> {
                   title: Text(item.title),
                   contentPadding: const EdgeInsets.all(5.0),
                   key: Key(item.id.toString()),
-                  leading: const Icon(Icons.folder_open),
                   subtitle: Column(
                     children: <Widget>[
                       Text(item.description),

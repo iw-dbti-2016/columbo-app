@@ -59,7 +59,6 @@ class _LocationListState extends State<LocationList> {
                   title: Text(item.name),
                   contentPadding: const EdgeInsets.all(5.0),
                   key: Key(item.id.toString()),
-                  leading: const Icon(Icons.location_on),
                   subtitle: Column(
                     children: <Widget>[
                       Text(item.coordinates.toString()),

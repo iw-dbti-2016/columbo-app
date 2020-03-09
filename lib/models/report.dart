@@ -12,7 +12,12 @@ abstract class Report implements Built<Report, ReportBuilder> {
   String get title;
 
   @nullable
-  String get date;
+  @BuiltValueField(wireName: 'date')
+  DateTime get dateObj;
+
+  @nullable
+  @memoized
+  String get date => DateFormat('dd/MM/y').format(dateObj);
 
   @nullable
   String get description;

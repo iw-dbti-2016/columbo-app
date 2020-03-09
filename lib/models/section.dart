@@ -24,19 +24,11 @@ abstract class Section implements Built<Section, SectionBuilder> {
 
   @nullable
   @BuiltValueField(wireName: 'start_time')
-  DateTime get startTimeObj;
-
-  @nullable
-  @memoized
-  String get startTime => DateFormat('dd/MM/y').format(startTimeObj);
+  String get startTime;
 
   @nullable
   @BuiltValueField(wireName: 'end_time')
-  DateTime get endTimeObj;
-
-  @nullable
-  @memoized
-  String get endTime => DateFormat('dd/MM/y').format(endTimeObj);
+  String get endTime;
 
   @nullable
   int get temperature;

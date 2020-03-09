@@ -59,7 +59,6 @@ class _SectionListState extends State<SectionList> {
                   title: Text("${item.startTime} - ${item.endTime}"),
                   contentPadding: const EdgeInsets.all(5.0),
                   key: Key(item.id.toString()),
-                  leading: const Icon(Icons.format_align_left),
                   subtitle: Column(
                     children: <Widget>[
                       Text(item.content),
