@@ -52,23 +52,55 @@ class _ReportListState extends State<ReportList> {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
-          for (Report item in reports)
-            Column(
-              children: [
-                ListTile(
-                  title: Text(item.title),
-                  contentPadding: const EdgeInsets.all(5.0),
-                  key: Key(item.id.toString()),
-                  subtitle: Column(
-                    children: <Widget>[
-                      Text(item.description),
-                      Text(item.date),
-                      Text(item.publishedAt),
-                    ],
+          for (Report report in reports)
+            Padding(
+              padding: const EdgeInsets.only(top: 20, left: 15, right: 15),
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text(
+                      report.date,
+                      style: Theme.of(context).textTheme.headline1,
+                    ),
+                    key: Key(report.id.toString()),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            report.title,
+                            style: Theme.of(context).textTheme.headline2,
+                            textAlign: TextAlign.justify,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 14),
+                            child: Text(
+                              report.description,
+                              style: Theme.of(context).textTheme.bodyText1,
+                              textAlign: TextAlign.justify,
+                              maxLines: 5,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10, bottom: 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                OutlineButton(
+                                  onPressed: () {},
+                                  child: const Text('Read More'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-                const Divider(),
-              ],
+                  const Divider(),
+                ],
+              ),
             ),
         ],
       );

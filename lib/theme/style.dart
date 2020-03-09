@@ -12,6 +12,12 @@ final ThemeData theme = ThemeData(
       letterSpacing: 2,
       fontWeight: FontWeight.w300,
     ),
+    headline2: TextStyle(
+      fontSize: 25,
+      color: Colors.black,
+      letterSpacing: 1,
+      fontWeight: FontWeight.w300,
+    ),
     // ...
     headline6: TextStyle(
       fontSize: 14,

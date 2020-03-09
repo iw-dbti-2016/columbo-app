@@ -52,24 +52,95 @@ class _SectionListState extends State<SectionList> {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
-          for (Section item in sections)
-            Column(
-              children: [
-                ListTile(
-                  title: Text("${item.startTime} - ${item.endTime}"),
-                  contentPadding: const EdgeInsets.all(5.0),
-                  key: Key(item.id.toString()),
-                  subtitle: Column(
-                    children: <Widget>[
-                      Text(item.content),
-                      Text(item.imageCaption),
-                      Text(item.temperature.toString()),
-                      Text(item.publishedAt),
-                    ],
+          for (Section section in sections)
+            Padding(
+              padding: const EdgeInsets.only(top: 20, left: 15, right: 15),
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text(
+                      "${section.startTime} - ${section.endTime}",
+                      style: Theme.of(context).textTheme.headline1,
+                    ),
+                    key: Key(section.id.toString()),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10, bottom: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Icon(
+                                    Icons.wb_sunny,
+                                    size: 25,
+                                    color: Colors.yellow[900],
+                                  ),
+                                  Text(
+                                    ' ${section.temperature}°C',
+                                    style:
+                                        Theme.of(context).textTheme.headline2,
+                                  ),
+                                ],
+                              ),
+                              if (section.isDraft)
+                                Chip(
+                                  label: const Text('Draft'),
+                                  padding: const EdgeInsets.all(6),
+                                  backgroundColor: Colors.green[600],
+                                  labelStyle: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          section.content,
+                          style: Theme.of(context).textTheme.bodyText1,
+                          textAlign: TextAlign.justify,
+                          maxLines: 15,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: Text(
+                            'published at ${section.publishedAt}',
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10, bottom: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              IconButton(
+                                icon: Icon(Icons.star_border),
+                                iconSize: 30,
+                                onPressed: () {},
+                              ),
+                              OutlineButton(
+                                onPressed: () {},
+                                child: const Text('Read More'),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.bookmark_border),
+                                iconSize: 30,
+                                onPressed: () {},
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const Divider(),
-              ],
+                  const Divider(),
+                ],
+              ),
             ),
         ],
       );
