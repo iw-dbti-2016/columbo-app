@@ -1,5 +1,6 @@
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
+import 'package:intl/intl.dart';
 
 part 'plan.g.dart';
 
@@ -8,7 +9,11 @@ abstract class Plan implements Built<Plan, PlanBuilder> {
 
   int get id;
 
-  String get date;
+  @BuiltValueField(wireName: 'date')
+  DateTime get dateObj;
+
+  @memoized
+  String get date => DateFormat('dd/MM/y').format(dateObj);
 
   String get program;
 
@@ -36,5 +41,6 @@ abstract class Plan implements Built<Plan, PlanBuilder> {
   String get activityStatus;
 
   factory Plan([void Function(PlanBuilder) updates]) = _$Plan;
+
   Plan._();
 }

@@ -1,5 +1,6 @@
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
+import 'package:intl/intl.dart';
 
 part 'user.g.dart';
 
@@ -30,7 +31,11 @@ abstract class User implements Built<User, UserBuilder> {
 
   @nullable
   @BuiltValueField(wireName: 'birth_date')
-  String get birthDate;
+  DateTime get birthDateObj;
+
+  @nullable
+  @memoized
+  String get birthDate => DateFormat('dd/MM/y').format(birthDateObj);
 
   @nullable
   String get description;
@@ -39,5 +44,6 @@ abstract class User implements Built<User, UserBuilder> {
   String get language;
 
   factory User([void Function(UserBuilder) updates]) = _$User;
+
   User._();
 }

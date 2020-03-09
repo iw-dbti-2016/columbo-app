@@ -1,6 +1,7 @@
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 import 'package:built_collection/built_collection.dart';
+import 'package:intl/intl.dart';
 
 part 'location.g.dart';
 
@@ -23,9 +24,14 @@ abstract class Location implements Built<Location, LocationBuilder> {
   @nullable
   String get info;
 
-  @BuiltValueField(wireName: 'published_at')
-  String get publishedAt;
+  @BuiltValueField(wireName: "published_at")
+  DateTime get publishedAtObj;
+
+  @memoized
+  String get publishedAt =>
+      DateFormat('dd/MM/y HH:mm:ss').format(publishedAtObj);
 
   factory Location([void Function(LocationBuilder) updates]) = _$Location;
+
   Location._();
 }

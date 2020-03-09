@@ -1,5 +1,6 @@
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
+import 'package:intl/intl.dart';
 
 part 'section.g.dart';
 
@@ -23,18 +24,31 @@ abstract class Section implements Built<Section, SectionBuilder> {
 
   @nullable
   @BuiltValueField(wireName: 'start_time')
-  String get startTime;
+  DateTime get startTimeObj;
+
+  @nullable
+  @memoized
+  String get startTime => DateFormat('dd/MM/y').format(startTimeObj);
 
   @nullable
   @BuiltValueField(wireName: 'end_time')
-  String get endTime;
+  DateTime get endTimeObj;
+
+  @nullable
+  @memoized
+  String get endTime => DateFormat('dd/MM/y').format(endTimeObj);
 
   @nullable
   int get temperature;
 
   @BuiltValueField(wireName: 'published_at')
-  String get publishedAt;
+  DateTime get publishedAtObj;
+
+  @memoized
+  String get publishedAt =>
+      DateFormat('dd/MM/y HH:mm:ss').format(publishedAtObj);
 
   factory Section([void Function(SectionBuilder) updates]) = _$Section;
+
   Section._();
 }

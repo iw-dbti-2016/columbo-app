@@ -1,5 +1,6 @@
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
+import 'package:intl/intl.dart';
 
 part 'payment.g.dart';
 
@@ -15,7 +16,11 @@ abstract class Payment implements Built<Payment, PaymentBuilder> {
 
   String get benificiary;
 
-  String get date;
+  @BuiltValueField(wireName: 'date')
+  DateTime get dateObj;
+
+  @memoized
+  String get date => DateFormat('dd/MM/y').format(dateObj);
 
   @nullable
   String get comments;
@@ -30,5 +35,6 @@ abstract class Payment implements Built<Payment, PaymentBuilder> {
   int get tipAmount;
 
   factory Payment([void Function(PaymentBuilder) updates]) = _$Payment;
+
   Payment._();
 }

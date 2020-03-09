@@ -33,8 +33,10 @@ abstract class Trip implements Built<Trip, TripBuilder> {
   DateTime get publishedAtObj;
 
   @memoized
-  String get publishedAt => DateFormat('dd/MM/y HH:mm:ss').format(publishedAtObj);
+  String get publishedAt =>
+      DateFormat('dd/MM/y HH:mm:ss').format(publishedAtObj);
 
   factory Trip([void Function(TripBuilder) updates]) = _$Trip;
+
   Trip._();
 }
