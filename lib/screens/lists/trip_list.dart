@@ -52,30 +52,100 @@ class _TripListState extends State<TripList> {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
-          for (Trip item in trips)
-            Column(
-              children: [
-                ListTile(
-                  title: Text(item.name),
-                  contentPadding: const EdgeInsets.all(5.0),
-                  key: Key(item.id.toString()),
-                  leading: const Icon(Icons.directions_car),
-                  subtitle: Column(
-                    children: <Widget>[
-                      Text(item.description),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          for (Trip trip in trips)
+            Padding(
+              padding: const EdgeInsets.only(top: 20, left: 15, right: 15),
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text(
+                      trip.name,
+                      style: Theme.of(context).textTheme.headline1,
+                    ),
+                    key: Key(trip.id.toString()),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 10, bottom: 20),
+                      child: Column(
                         children: <Widget>[
-                          Text(item.startDate),
-                          Text(item.endDate),
+                          Column(
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(2),
+                                  child: SizedBox(
+                                    height: 10,
+                                    child: LinearProgressIndicator(
+                                      backgroundColor: Colors.grey[200],
+                                      valueColor: AlwaysStoppedAnimation(
+                                          Colors.green[600]),
+                                      value: (trip.startDateObj
+                                              .difference(DateTime.now())
+                                              .inDays) /
+                                          (trip.startDateObj
+                                              .difference(trip.endDateObj)
+                                              .inDays),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 5, bottom: 20),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Text(
+                                      trip.startDate,
+                                      style:
+                                          Theme.of(context).textTheme.bodyText1,
+                                    ),
+                                    Text(
+                                      trip.endDate,
+                                      style:
+                                          Theme.of(context).textTheme.bodyText1,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            trip.description,
+                            style: Theme.of(context).textTheme.bodyText1,
+                            textAlign: TextAlign.justify,
+                            maxLines: 5,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                IconButton(
+                                  icon: Icon(Icons.star_border),
+                                  iconSize: 30,
+                                  onPressed: () {},
+                                ),
+                                OutlineButton(
+                                  onPressed: () {},
+                                  child: const Text('Read More'),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.bookmark_border),
+                                  iconSize: 30,
+                                  onPressed: () {},
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
-                      Text(item.publishedAt),
-                    ],
+                    ),
                   ),
-                ),
-                const Divider(),
-              ],
+                  const Divider(),
+                ],
+              ),
             ),
         ],
       );

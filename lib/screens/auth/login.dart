@@ -82,21 +82,27 @@ class Login extends StatelessWidget {
                       child: const Text('Log in'),
                     ),
                   ),
-                  OutlineButton(
-                    color: Colors.white,
-                    highlightedBorderColor: Colors.green[600],
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/auth/forgot-password');
-                    },
-                    child: const Text('Forgot password'),
-                  ),
-                  OutlineButton(
-                    color: Colors.white,
-                    highlightedBorderColor: Colors.green[600],
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/auth/register');
-                    },
-                    child: const Text('Register'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      OutlineButton(
+                        color: Colors.white,
+                        highlightedBorderColor: Colors.green[600],
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/auth/forgot-password');
+                        },
+                        child: const Text('Forgot password'),
+                      ),
+                      OutlineButton(
+                        color: Colors.white,
+                        highlightedBorderColor: Colors.green[600],
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/auth/register');
+                        },
+                        child: const Text('Register'),
+                      ),
+                    ],
                   ),
                 ],
               ),
