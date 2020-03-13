@@ -1,3 +1,4 @@
+import 'package:Columbo/widgets/markdown.dart';
 import 'package:flutter/material.dart';
 
 import 'package:Columbo/models/section.dart';
@@ -100,11 +101,9 @@ class _SectionListState extends State<SectionList> {
                             ],
                           ),
                         ),
-                        Text(
+                        MarkDownText(
                           section.content,
-                          style: Theme.of(context).textTheme.bodyText1,
-                          textAlign: TextAlign.justify,
-                          maxLines: 15,
+                          key: Key('section-${section.id}'),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 5),
