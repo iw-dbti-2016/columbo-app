@@ -43,6 +43,17 @@ abstract class User implements Built<User, UserBuilder> {
   @nullable
   String get language;
 
+  @nullable
+  String get token;
+
+  @nullable
+  @BuiltValueField(wireName: 'token_type')
+  String get tokenType;
+
+  @nullable
+  @BuiltValueField(wireName: 'token_expires_in')
+  int get tokenExpiresIn;
+
   factory User([void Function(UserBuilder) updates]) = _$User;
 
   User._();

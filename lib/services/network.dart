@@ -18,6 +18,27 @@ Future<dynamic> getResourceList(String url, Serializer serializer) async {
       .toList();
 }
 
+Future<dynamic> post(String url, {String body, Serializer serializer}) async {
+  final response = await http.post(
+    'http://127.0.0.1:8000/api/v1/$url',
+    body: body,
+    headers: {
+      "Content-Type": "application/json",
+    }
+  );
+
+//  if (response.statusCode != 200) {
+//    handleError(response);
+//    return;
+//  }
+
+  if (serializer == null) {
+    return response.body;
+  }
+
+  return standardSerializers.deserializeWith(serializer, json.decode(response.body));
+}
+
 void handleError(dynamic response) {
   throw Exception('Failed to load resource');
 }

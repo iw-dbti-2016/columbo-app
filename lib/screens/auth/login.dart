@@ -1,9 +1,42 @@
+import 'dart:convert';
+
+import 'package:Columbo/models/user.dart';
+import 'package:Columbo/services/network.dart';
+import 'package:Columbo/services/secure_storage.dart';
 import 'package:Columbo/widgets/columbo_logo.dart';
 import 'package:flutter/material.dart';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
+  @override
+  _LoginState createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  final _formKey = GlobalKey<FormState>();
+
+  final _emailFieldController = TextEditingController();
+  final _passwordFieldController = TextEditingController();
+
+  void loadHome() {
+    isInStorage('user').then((value) {
+      if (value) {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _emailFieldController.dispose();
+    _passwordFieldController.dispose();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    loadHome();
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(left: 30, right: 30),
@@ -15,68 +48,67 @@ class Login extends StatelessWidget {
               child: ColumboLogo(),
             ),
             Form(
+              key: _formKey,
               child: Column(
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.only(top: 30),
                     child: TextFormField(
+                      controller: _emailFieldController,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'An email is required';
+                        }
+
+                        return null;
+                      },
                       decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            width: 0.5,
-                            color: Colors.green[600],
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            width: 1,
-                            color: Colors.green[600],
-                          ),
-                        ),
                         labelText: 'email',
                         labelStyle: TextStyle(
                           color: Colors.green[600],
                           fontSize: 22,
                         ),
-                        hintText: 'email',
                       ),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 10, bottom: 10),
                     child: TextFormField(
+                      controller: _passwordFieldController,
                       decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            width: 0.5,
-                            color: Colors.green[600],
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            width: 1,
-                            color: Colors.green[600],
-                          ),
-                        ),
                         labelText: 'password',
                         labelStyle: TextStyle(
                           color: Colors.green[600],
                           fontSize: 22,
                         ),
-                        hintText: 'password',
                       ),
                       obscureText: true,
                     ),
                   ),
-                  const Text(
-                      'This login doesn\'t actually work, just click the button to move on.'),
                   SizedBox(
                     width: double.infinity,
                     height: 50,
                     child: FlatButton(
                       color: Colors.green[600],
                       textColor: Colors.white,
-                      onPressed: () {
+                      onPressed: () async {
+                        if (!_formKey.currentState.validate()) {
+                          return;
+                        }
+
+                        final data = <String, String>{
+                          "email": _emailFieldController.text,
+                          "password": _passwordFieldController.text,
+                        };
+
+                        final User response = await post(
+                          'auth/login',
+                          body: json.encode(data),
+                          serializer: User.serializer,
+                        ) as User;
+
+                        writeToStorage('token', '${response.tokenType} ${response.token}');
+
                         Navigator.pushReplacementNamed(context, '/home');
                       },
                       child: const Text('Log in'),
@@ -104,6 +136,12 @@ class Login extends StatelessWidget {
                       ),
                     ],
                   ),
+                  RaisedButton(
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(context, '/home');
+                    },
+                    child: const Text('Visit'),
+                  )
                 ],
               ),
             ),

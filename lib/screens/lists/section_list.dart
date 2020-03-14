@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:Columbo/models/section.dart';
 import 'package:Columbo/widgets/columbo_scaffold.dart';
 import 'package:Columbo/services/network.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SectionList extends StatefulWidget {
   const SectionList({Key key}) : super(key: key);
@@ -68,7 +69,7 @@ class _SectionListState extends State<SectionList> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: <Widget>[
                         Padding(
-                          padding: const EdgeInsets.only(top: 10, bottom: 10),
+                          padding: const EdgeInsets.only(top: 10, bottom: 0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[

@@ -1,9 +1,25 @@
+import 'package:Columbo/services/secure_storage.dart';
 import 'package:Columbo/widgets/columbo_logo.dart';
 import 'package:Columbo/widgets/drawer_button.dart';
 import 'package:Columbo/widgets/drawer_text.dart';
 import 'package:flutter/material.dart';
 
-class NavigationDrawer extends StatelessWidget {
+class NavigationDrawer extends StatefulWidget {
+  @override
+  _NavigationDrawerState createState() => _NavigationDrawerState();
+}
+
+class _NavigationDrawerState extends State<NavigationDrawer> {
+  bool authenticatedUser = false;
+
+  @override
+  void initState() {
+    isInStorage('token').then((value) => setState(() {
+          authenticatedUser = value;
+        }));
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -49,25 +65,37 @@ class NavigationDrawer extends StatelessWidget {
             ),
             const Divider(),
             const DrawerText("Account"),
-            const ListTile(
-              enabled: false,
-              title: Text('Settings'),
-              leading: Icon(
-                Icons.settings,
+            if (authenticatedUser)
+              const ListTile(
+                enabled: false,
+                title: Text('Settings'),
+                leading: Icon(
+                  Icons.settings,
+                ),
               ),
-            ),
-            const ListTile(
-              enabled: false,
-              title: Text('Profile'),
-              leading: Icon(
-                Icons.account_circle,
+            if (authenticatedUser)
+              const ListTile(
+                enabled: false,
+                title: Text('Profile'),
+                leading: Icon(
+                  Icons.account_circle,
+                ),
               ),
-            ),
-            DrawerButton(
-              label: 'Log out',
-              icon: Icons.lock_outline,
-              route: '/auth/login',
-            ),
+            if (authenticatedUser)
+              DrawerButton(
+                label: 'Log out',
+                icon: Icons.lock_outline,
+                route: '/auth/login',
+                onTapExtra: () {
+                  removeFromStorage('token');
+                },
+              ),
+            if (!authenticatedUser)
+              DrawerButton(
+                label: 'Log in',
+                icon: Icons.lock_open,
+                route: '/auth/login',
+              ),
           ],
         ),
       ),

@@ -41,7 +41,6 @@ class SpotifySyntax extends md.BlockSyntax {
       'frameborder': '0',
       'allowtransparency': 'true',
       'allow': 'encrypted-media',
-      'style': 'webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px;overflow:hidden;',
     });
   }
 }
@@ -65,7 +64,7 @@ class MarkDownText extends StatelessWidget {
         fontSize: 18,
         fontWeight: FontWeight.w300,
       ),
-      bodyPadding: const EdgeInsets.all(0),
+      bodyPadding: const EdgeInsets.only(top: 5),
       webView: true,
       webViewJs: true,
       unsupportedWebViewWorkaroundForIssue37: true,

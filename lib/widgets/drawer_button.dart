@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 
 class DrawerButton extends StatelessWidget {
-  const DrawerButton({this.icon, this.label, this.route});
+  const DrawerButton({this.icon, this.label, this.route, this.onTapExtra});
 
   final IconData icon;
   final String label;
   final String route;
+  final Function onTapExtra;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
+        if (onTapExtra != null) {
+          onTapExtra();
+        }
         Navigator.pushReplacementNamed(context, route);
       },
       highlightColor: Colors.green[100],
