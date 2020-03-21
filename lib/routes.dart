@@ -1,3 +1,4 @@
+import 'package:Columbo/screens/auth/landing_page.dart';
 import 'package:Columbo/screens/lists/location_list.dart';
 import 'package:Columbo/screens/lists/poi_list.dart';
 import 'package:Columbo/screens/lists/report_list.dart';
@@ -18,6 +19,7 @@ final Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
   '/home': (context) => TimeLine(),
 
   // AUTH
+  '/landing' : (context) => LandingPage(),
   '/auth/login': (context) => Login(),
   '/auth/register': (context) => Register(),
   '/auth/forgot-password': (context) => ForgotPassword(),

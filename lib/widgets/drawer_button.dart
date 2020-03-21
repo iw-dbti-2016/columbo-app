@@ -13,7 +13,7 @@ class DrawerButton extends StatelessWidget {
     return InkWell(
       onTap: () {
         if (onTapExtra != null) {
-          onTapExtra();
+          onTapExtra(context);
         }
         Navigator.pushReplacementNamed(context, route);
       },

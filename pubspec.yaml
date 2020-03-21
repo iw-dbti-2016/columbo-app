@@ -20,6 +20,8 @@ dependencies:
   flutter_widget_from_html: ^0.3.2+1
   webview_flutter: ^0.3.19+9
   flutter_secure_storage: ^3.3.1+1
+  provider: ^4.0.4
+  device_info: ^0.4.2+1
 
   flutter:
     sdk: flutter

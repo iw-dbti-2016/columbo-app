@@ -1,10 +1,8 @@
-import 'dart:convert';
-
 import 'package:Columbo/models/user.dart';
-import 'package:Columbo/services/network.dart';
-import 'package:Columbo/services/secure_storage.dart';
+import 'package:Columbo/services/auth.dart';
 import 'package:Columbo/widgets/columbo_logo.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -17,14 +15,6 @@ class _LoginState extends State<Login> {
   final _emailFieldController = TextEditingController();
   final _passwordFieldController = TextEditingController();
 
-  void loadHome() {
-    isInStorage('user').then((value) {
-      if (value) {
-        Navigator.pushReplacementNamed(context, '/home');
-      }
-    });
-  }
-
   @override
   void dispose() {
     _emailFieldController.dispose();
@@ -35,8 +25,6 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    loadHome();
-
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(left: 30, right: 30),
@@ -69,6 +57,7 @@ class _LoginState extends State<Login> {
                           fontSize: 22,
                         ),
                       ),
+                      keyboardType: TextInputType.emailAddress,
                     ),
                   ),
                   Padding(
@@ -85,34 +74,35 @@ class _LoginState extends State<Login> {
                       obscureText: true,
                     ),
                   ),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: FlatButton(
-                      color: Colors.green[600],
-                      textColor: Colors.white,
-                      onPressed: () async {
-                        if (!_formKey.currentState.validate()) {
-                          return;
-                        }
+                  Center(
+                    child: Provider.of<Auth>(context).loading
+                        ? const CircularProgressIndicator()
+                        : SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: FlatButton(
+                              color: Colors.green[600],
+                              textColor: Colors.white,
+                              onPressed: () async {
+                                if (!_formKey.currentState.validate()) {
+                                  return;
+                                }
 
-                        final data = <String, String>{
-                          "email": _emailFieldController.text,
-                          "password": _passwordFieldController.text,
-                        };
-
-                        final User response = await post(
-                          'auth/login',
-                          body: json.encode(data),
-                          serializer: User.serializer,
-                        ) as User;
-
-                        writeToStorage('token', '${response.tokenType} ${response.token}');
-
-                        Navigator.pushReplacementNamed(context, '/home');
-                      },
-                      child: const Text('Log in'),
-                    ),
+                                Provider.of<Auth>(context, listen: false)
+                                    .signInWithEmailAndPassword(
+                                        _emailFieldController.text,
+                                        _passwordFieldController.text)
+                                    .then((User user) =>
+                                        user.emailVerifiedAtObj == null
+                                            ? Navigator.pushReplacementNamed(
+                                                context, '/auth/validate-email')
+                                            : Navigator.pushReplacementNamed(
+                                                context, '/home'))
+                                    .catchError((e) => print("login error $e"));
+                              },
+                              child: const Text('Log in'),
+                            ),
+                          ),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -141,7 +131,7 @@ class _LoginState extends State<Login> {
                       Navigator.pushReplacementNamed(context, '/home');
                     },
                     child: const Text('Visit'),
-                  )
+                  ),
                 ],
               ),
             ),

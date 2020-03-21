@@ -1,8 +1,10 @@
+import 'package:Columbo/services/auth.dart';
 import 'package:Columbo/services/secure_storage.dart';
 import 'package:Columbo/widgets/columbo_logo.dart';
 import 'package:Columbo/widgets/drawer_button.dart';
 import 'package:Columbo/widgets/drawer_text.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class NavigationDrawer extends StatefulWidget {
   @override
@@ -10,18 +12,10 @@ class NavigationDrawer extends StatefulWidget {
 }
 
 class _NavigationDrawerState extends State<NavigationDrawer> {
-  bool authenticatedUser = false;
-
-  @override
-  void initState() {
-    isInStorage('token').then((value) => setState(() {
-          authenticatedUser = value;
-        }));
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final bool authenticated = Provider.of<Auth>(context).authenticated;
+
     return Drawer(
       child: Scrollbar(
         child: ListView(
@@ -65,7 +59,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
             ),
             const Divider(),
             const DrawerText("Account"),
-            if (authenticatedUser)
+            if (authenticated)
               const ListTile(
                 enabled: false,
                 title: Text('Settings'),
@@ -73,7 +67,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                   Icons.settings,
                 ),
               ),
-            if (authenticatedUser)
+            if (authenticated)
               const ListTile(
                 enabled: false,
                 title: Text('Profile'),
@@ -81,16 +75,16 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                   Icons.account_circle,
                 ),
               ),
-            if (authenticatedUser)
+            if (authenticated)
               DrawerButton(
                 label: 'Log out',
                 icon: Icons.lock_outline,
                 route: '/auth/login',
-                onTapExtra: () {
-                  removeFromStorage('token');
+                onTapExtra: (BuildContext context) async {
+                  await Provider.of<Auth>(context, listen: false).signOut();
                 },
               ),
-            if (!authenticatedUser)
+            if (!authenticated)
               DrawerButton(
                 label: 'Log in',
                 icon: Icons.lock_open,

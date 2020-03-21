@@ -47,12 +47,13 @@ abstract class User implements Built<User, UserBuilder> {
   String get token;
 
   @nullable
-  @BuiltValueField(wireName: 'token_type')
-  String get tokenType;
+  @BuiltValueField(wireName: 'email_verified_at')
+  DateTime get emailVerifiedAtObj;
 
   @nullable
-  @BuiltValueField(wireName: 'token_expires_in')
-  int get tokenExpiresIn;
+  @memoized
+  String get emailVerifiedAt =>
+      DateFormat('dd/MM/y').format(emailVerifiedAtObj);
 
   factory User([void Function(UserBuilder) updates]) = _$User;
 

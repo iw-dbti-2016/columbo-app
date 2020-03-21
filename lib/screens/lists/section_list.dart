@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:Columbo/models/section.dart';
 import 'package:Columbo/widgets/columbo_scaffold.dart';
 import 'package:Columbo/services/network.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SectionList extends StatefulWidget {
   const SectionList({Key key}) : super(key: key);
@@ -51,99 +50,132 @@ class _SectionListState extends State<SectionList> {
         child: CircularProgressIndicator(),
       );
     } else {
-      return ListView(
+      return ListView.separated(
         physics: const AlwaysScrollableScrollPhysics(),
-        children: [
-          for (Section section in sections)
+        itemCount: sections.length,
+        itemBuilder: (context, index) {
+          return _buildListItem(sections[index]);
+        },
+        separatorBuilder: (context, index) {
+          return const Divider(
+            color: Colors.grey,
+          );
+        },
+      );
+    }
+  }
+
+  Widget _buildListItem(Section section) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20, left: 15, right: 15),
+      child: ListTile(
+        title: Column(
+          children: <Widget>[
             Padding(
-              padding: const EdgeInsets.only(top: 20, left: 15, right: 15),
-              child: Column(
+              padding: const EdgeInsets.only(left: 4, right: 4),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ListTile(
-                    title: Text(
-                      "${section.startTime} - ${section.endTime}",
-                      style: Theme.of(context).textTheme.headline1,
-                    ),
-                    key: Key(section.id.toString()),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(top: 10, bottom: 0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Icon(
-                                    Icons.wb_sunny,
-                                    size: 25,
-                                    color: Colors.yellow[900],
-                                  ),
-                                  Text(
-                                    ' ${section.temperature}°C',
-                                    style:
-                                        Theme.of(context).textTheme.headline2,
-                                  ),
-                                ],
-                              ),
-                              if (section.isDraft)
-                                Chip(
-                                  label: const Text('Draft'),
-                                  padding: const EdgeInsets.all(6),
-                                  backgroundColor: Colors.green[600],
-                                  labelStyle: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                        MarkDownText(
-                          section.content,
-                          key: Key('section-${section.id}'),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 5),
-                          child: Text(
-                            'published at ${section.publishedAt}',
-                            style: Theme.of(context).textTheme.headline6,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 10, bottom: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              IconButton(
-                                icon: Icon(Icons.star_border),
-                                iconSize: 30,
-                                onPressed: () {},
-                              ),
-                              OutlineButton(
-                                onPressed: () {},
-                                child: const Text('Read More'),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.bookmark_border),
-                                iconSize: 30,
-                                onPressed: () {},
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                  Text(
+                    'start',
+                    style: Theme.of(context).textTheme.headline6,
                   ),
-                  const Divider(),
+                  Text(
+                    'end',
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
                 ],
               ),
             ),
-        ],
-      );
-    }
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  section.startTime,
+                  style: Theme.of(context).textTheme.headline1,
+                ),
+                const Divider(),
+                Text(
+                  section.endTime,
+                  style: Theme.of(context).textTheme.headline1,
+                ),
+              ],
+            ),
+          ],
+        ),
+        key: Key(section.id.toString()),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(top: 10, bottom: 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(
+                        Icons.wb_sunny,
+                        size: 25,
+                        color: Colors.yellow[900],
+                      ),
+                      Text(
+                        ' ${section.temperature}°C',
+                        style: Theme.of(context).textTheme.headline2,
+                      ),
+                    ],
+                  ),
+                  if (section.isDraft)
+                    Chip(
+                      label: const Text('Draft'),
+                      padding: const EdgeInsets.all(6),
+                      backgroundColor: Colors.green[600],
+                      labelStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            MarkDownText(
+              section.content,
+              key: Key('section-${section.id}'),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 5),
+              child: Text(
+                'published at ${section.publishedAt}',
+                style: Theme.of(context).textTheme.headline6,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10, bottom: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.star_border),
+                    iconSize: 30,
+                    onPressed: () {},
+                  ),
+                  OutlineButton(
+                    onPressed: () {},
+                    child: const Text('Read More'),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.bookmark_border),
+                    iconSize: 30,
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
