@@ -1,8 +1,18 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 final ThemeData theme = ThemeData(
   primaryColor: Colors.green[600],
+
+  appBarTheme: AppBarTheme(
+    color: Colors.white,
+    brightness: Brightness.light,
+    actionsIconTheme: IconThemeData(
+      color: Colors.black,
+    ),
+    iconTheme: IconThemeData(
+      color: Colors.black,
+    ),
+  ),
 
   textSelectionColor: Colors.green[300],
   textSelectionHandleColor: Colors.green[400],

@@ -66,20 +66,24 @@ class Auth with Network, ChangeNotifier implements AuthService {
     return _storeUser(_userFromResponse(response.body));
   }
 
-  Future<User> getUser() async {
+  Future<User> getUser({bool indicateLoading = true}) async {
     if (_user != null) {
       return _user;
     }
 
-    return fetchUser();
+    return fetchUser(indicateLoading: indicateLoading);
   }
 
   @override
-  Future<User> fetchUser() async {
-    _startLoading();
+  Future<User> fetchUser({bool indicateLoading = true}) async {
+    if (indicateLoading) {
+      _startLoading();
+    }
 
     if (await _retrieveToken() == null) {
-      _stopLoading();
+      if (indicateLoading) {
+        _stopLoading();
+      }
       _user = null;
       return null;
     }

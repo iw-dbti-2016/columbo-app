@@ -20,7 +20,8 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   void initState() {
-    authUser = Provider.of<Auth>(widget.context).getUser();
+    authUser = Provider.of<Auth>(widget.context, listen: false)
+        .getUser(indicateLoading: false);
     super.initState();
   }
 
