@@ -19,49 +19,35 @@ class Auth with Network, ChangeNotifier implements AuthService {
   User _user;
   String _token;
   bool _loading = false;
-  final StreamController<User> _onAuthStateChangedController =
-      StreamController<User>();
 
   Auth() {
-    deviceInfo.getDeviceName().then((value) {
-      _deviceName = value;
-    }).then((_) => _initUser());
+    deviceInfo
+        .getDeviceName()
+        .then((value) {
+          _deviceName = value;
+        })
+        .then((_) => getUser())
+        .then((_) {
+          notifyListeners();
+        })
+        .catchError((e) => print('INIT exception: $e'));
   }
+
+  // GETTERS
 
   bool get loading => _loading;
 
   bool get authenticated => _user != null;
 
+  @override
   User get user => _user;
 
   @override
-  Stream<User> get onAuthStateChanged => _onAuthStateChangedController.stream;
-
-  Future<void> _initUser() async {
-    try {
-      final String token = await retrieveToken();
-
-      if (token == null) {
-        _onAuthStateChangedController.add(null);
-      }
-
-      await retrieveUser();
-    } catch (e) {
-      print(e);
-    }
-
-    _onAuthStateChangedController.add(_user);
-    notifyListeners();
-  }
+  String get token => _token;
 
   @override
-  Future<User> createUserWithEmailAndPassword(
-      String email,
-      String password,
-      String pwConfirm,
-      String username,
-      String firstName,
-      String lastName) async {
+  Future<User> register(String email, String password, String pwConfirm,
+      String username, String firstName, String lastName) async {
     _startLoading();
 
     final Response response = await this.post('/auth/register',
@@ -73,45 +59,37 @@ class Auth with Network, ChangeNotifier implements AuthService {
           "password": password,
           "password_confirmation": pwConfirm,
           "device_name": _deviceName,
-        }));
-
-    if (response.statusCode != 201) {
-      _stopLoading();
-      throw Exception(response.body);
-    }
+        }),
+        expectedStatus: 201,
+        preExceptionAction: _stopLoading);
 
     return _storeUser(_userFromResponse(response.body));
   }
 
-  @override
-  Future<User> currentUser() async {
+  Future<User> getUser() async {
     if (_user != null) {
       return _user;
     }
 
-    return retrieveUser();
+    return fetchUser();
   }
 
-  Future<User> retrieveUser({bool forceReload = false}) async {
-    if (_user != null && !forceReload) {
-      return _user;
-    }
+  @override
+  Future<User> fetchUser() async {
+    _startLoading();
 
-    if (await retrieveToken() == null) {
+    if (await _retrieveToken() == null) {
+      _stopLoading();
+      _user = null;
       return null;
     }
 
-    final Response response = await this.get('/user');
-
-    if (response.statusCode != 200) {
-      throw Exception(response.body);
-    }
+    final Response response = await this.get('/user', expectedStatus: 200);
 
     return _storeUser(_userFromResponse(response.body));
   }
 
-  @override
-  Future<String> retrieveToken() async {
+  Future<String> _retrieveToken() async {
     if (_token != null) {
       return _token;
     }
@@ -119,6 +97,7 @@ class Auth with Network, ChangeNotifier implements AuthService {
     final storageToken = await secureStorage.read(key: tokenStorageKey);
 
     if (storageToken == null) {
+      _token = null;
       return null;
     }
 
@@ -128,15 +107,10 @@ class Auth with Network, ChangeNotifier implements AuthService {
   @override
   Future<bool> refreshToken() async {
     _startLoading();
-    final Response response = await this.patch('/auth/refresh', body: '''{
-          "device_name": "$_deviceName"
-        }''');
-
-    if (response.statusCode != 200) {
-      _stopLoading();
-      throw Exception(response.body);
-      return false;
-    }
+    final Response response = await this.patch('/auth/refresh',
+        body: json.encode({"device_name": _deviceName}),
+        expectedStatus: 200,
+        preExceptionAction: _stopLoading);
 
     _storeUser(_userFromResponse(response.body));
     return true;
@@ -145,79 +119,69 @@ class Auth with Network, ChangeNotifier implements AuthService {
   @override
   Future<bool> sendPasswordResetEmail(String email) async {
     _startLoading();
-    final Response response = await this.post('/auth/password/email', body: '''{
-        "email": "$email"
-      }''');
+
+    await this.post('/auth/password/email',
+        body: json.encode({"email": email}),
+        expectedStatus: 200,
+        preExceptionAction: _stopLoading);
 
     _stopLoading();
-
-    if (response.statusCode != 200) {
-      throw Exception(response.body);
-      return false;
-    }
-
     return true;
   }
 
   @override
   Future<bool> resendEmailVerification() async {
     _startLoading();
-    final Response response = await this.post('/auth/email/resend');
+
+    await this.post('/auth/email/resend',
+        expectedStatus: 200, preExceptionAction: _stopLoading);
 
     _stopLoading();
-
-    if (response.statusCode != 200) {
-      throw Exception(response.body);
-      return false;
-    }
-
     return true;
   }
 
   @override
-  Future<User> signInWithEmailAndPassword(String email, String password) async {
+  Future<User> login(String email, String password) async {
     _startLoading();
 
-    final Response response = await this.post('/auth/login', body: '''{
-      "email": "$email",
-      "password": "$password",
-      "device_name": "$_deviceName"
-    }''');
-
-    if (response.statusCode != 200) {
-      _stopLoading();
-      throw Exception(response.body);
-    }
+    final Response response = await this.post('/auth/login',
+        body: json.encode(
+            {"email": email, "password": password, "device_name": _deviceName}),
+        expectedStatus: 200,
+        preExceptionAction: _stopLoading);
 
     return _storeUser(_userFromResponse(response.body));
   }
 
   @override
-  Future<bool> signOut() async {
+  Future<bool> logout() async {
     _startLoading();
 
-    final Response response = await this.delete('/auth/logout');
-
-    if (response.statusCode != 200) {
-      _stopLoading();
-      throw Exception(response.body);
-      return false;
-    }
+    await this.delete('/auth/logout',
+        expectedStatus: 200, preExceptionAction: _stopLoading);
 
     await secureStorage.delete(key: tokenStorageKey);
     _token = null;
     _user = null;
-    _stopLoading();
 
+    _stopLoading();
     return true;
   }
 
   void _startLoading() {
+    if (_loading) {
+      // Already loading, no need to notify
+      return;
+    }
     _loading = true;
     notifyListeners();
   }
 
   void _stopLoading() {
+    if (!_loading) {
+      // Already not loading, no need to notify
+      return;
+    }
     _loading = false;
     notifyListeners();
   }

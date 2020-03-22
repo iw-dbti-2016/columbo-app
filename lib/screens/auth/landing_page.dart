@@ -3,19 +3,33 @@ import 'package:Columbo/screens/auth/login.dart';
 import 'package:Columbo/screens/auth/validate_email.dart';
 import 'package:Columbo/screens/timeline.dart';
 import 'package:Columbo/services/auth.dart';
-import 'package:Columbo/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class LandingPage extends StatelessWidget {
+class LandingPage extends StatefulWidget {
+  const LandingPage(this.context) : super();
+
+  final BuildContext context;
+
+  @override
+  _LandingPageState createState() => _LandingPageState();
+}
+
+class _LandingPageState extends State<LandingPage> {
+  Future<User> authUser;
+
+  @override
+  void initState() {
+    authUser = Provider.of<Auth>(widget.context).getUser();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final AuthService auth = Provider.of<Auth>(context);
-
-    return StreamBuilder(
-      stream: auth.onAuthStateChanged,
+    return FutureBuilder(
+      future: authUser,
       builder: (_, AsyncSnapshot<User> snapshot) {
-        if (snapshot.connectionState == ConnectionState.active) {
+        if (snapshot.connectionState == ConnectionState.done) {
           final user = snapshot.data;
 
           if (user == null) {

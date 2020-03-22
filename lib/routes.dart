@@ -6,6 +6,7 @@ import 'package:Columbo/screens/lists/section_list.dart';
 
 /// This file should holds a map with all the routes
 import 'package:Columbo/screens/lists/trip_list.dart';
+import 'package:Columbo/screens/profile/profile.dart';
 
 import 'package:flutter/material.dart';
 
@@ -19,11 +20,14 @@ final Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
   '/home': (context) => TimeLine(),
 
   // AUTH
-  '/landing' : (context) => LandingPage(),
+  '/landing' : (context) => LandingPage(context),
   '/auth/login': (context) => Login(),
   '/auth/register': (context) => Register(),
   '/auth/forgot-password': (context) => ForgotPassword(),
   '/auth/validate-email': (context) => ValidateEmail(),
+
+  // PROFILE
+  '/profile': (context) => Profile(),
 
   // TRIPS
   '/trips/list': (context) => const TripList(),

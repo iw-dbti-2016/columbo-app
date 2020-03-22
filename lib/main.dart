@@ -1,10 +1,12 @@
 import 'package:Columbo/routes.dart';
 import 'package:Columbo/services/auth.dart';
+import 'package:Columbo/services/validator.dart';
 
 import 'package:Columbo/theme/style.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 
 void main() => runApp(Columbo());
 
@@ -20,14 +22,17 @@ class Columbo extends StatelessWidget {
       ),
     );
 
-    return ChangeNotifierProvider(
-      create: (_) => Auth(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => Auth()),
+        Provider(create: (_) => Validator()),
+      ],
       child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: theme,
-        routes: routes,
-        initialRoute: '/landing',
-      ),
+          debugShowCheckedModeBanner: false,
+          theme: theme,
+          routes: routes,
+          initialRoute: '/landing',
+        ),
     );
   }
 }

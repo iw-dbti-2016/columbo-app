@@ -1,5 +1,4 @@
 import 'package:Columbo/services/auth.dart';
-import 'package:Columbo/services/secure_storage.dart';
 import 'package:Columbo/widgets/columbo_logo.dart';
 import 'package:Columbo/widgets/drawer_button.dart';
 import 'package:Columbo/widgets/drawer_text.dart';
@@ -68,12 +67,10 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                 ),
               ),
             if (authenticated)
-              const ListTile(
-                enabled: false,
-                title: Text('Profile'),
-                leading: Icon(
-                  Icons.account_circle,
-                ),
+              DrawerButton(
+                label: 'Profile',
+                icon: Icons.account_circle,
+                route: '/profile',
               ),
             if (authenticated)
               DrawerButton(
@@ -81,7 +78,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                 icon: Icons.lock_outline,
                 route: '/auth/login',
                 onTapExtra: (BuildContext context) async {
-                  await Provider.of<Auth>(context, listen: false).signOut();
+                  await Provider.of<Auth>(context, listen: false).logout();
                 },
               ),
             if (!authenticated)

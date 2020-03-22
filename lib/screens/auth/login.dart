@@ -1,5 +1,7 @@
 import 'package:Columbo/models/user.dart';
 import 'package:Columbo/services/auth.dart';
+import 'package:Columbo/services/validator.dart';
+import 'package:Columbo/widgets/columbo_form_field.dart';
 import 'package:Columbo/widgets/columbo_logo.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,118 +28,126 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(left: 30, right: 30),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: Center(
+        child: ListView(
+          physics: const PageScrollPhysics(),
+          shrinkWrap: true,
           children: <Widget>[
-            Hero(
-              tag: 'logo',
-              child: ColumboLogo(),
+            Padding(
+              padding: const EdgeInsets.only(top: 30),
+              child: Center(
+                child: Hero(
+                  tag: 'logo',
+                  child: ColumboLogo(),
+                ),
+              ),
             ),
-            Form(
-              key: _formKey,
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 30),
-                    child: TextFormField(
-                      controller: _emailFieldController,
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'An email is required';
-                        }
+            Padding(
+              padding: const EdgeInsets.all(30),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    buildEmailInput(context),
+                    buildPasswordField(context),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Center(
+                        child: Provider.of<Auth>(context).loading
+                            ? const SizedBox(
+                                height: 50,
+                                width: 50,
+                                child: CircularProgressIndicator(),
+                              )
+                            : SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: FlatButton(
+                                  color: Colors.green[600],
+                                  textColor: Colors.white,
+                                  onPressed: () async {
+                                    if (!_formKey.currentState.validate()) {
+                                      return;
+                                    }
 
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                        labelText: 'email',
-                        labelStyle: TextStyle(
-                          color: Colors.green[600],
-                          fontSize: 22,
-                        ),
-                      ),
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10, bottom: 10),
-                    child: TextFormField(
-                      controller: _passwordFieldController,
-                      decoration: InputDecoration(
-                        labelText: 'password',
-                        labelStyle: TextStyle(
-                          color: Colors.green[600],
-                          fontSize: 22,
-                        ),
-                      ),
-                      obscureText: true,
-                    ),
-                  ),
-                  Center(
-                    child: Provider.of<Auth>(context).loading
-                        ? const CircularProgressIndicator()
-                        : SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: FlatButton(
-                              color: Colors.green[600],
-                              textColor: Colors.white,
-                              onPressed: () async {
-                                if (!_formKey.currentState.validate()) {
-                                  return;
-                                }
-
-                                Provider.of<Auth>(context, listen: false)
-                                    .signInWithEmailAndPassword(
-                                        _emailFieldController.text,
-                                        _passwordFieldController.text)
-                                    .then((User user) =>
-                                        user.emailVerifiedAtObj == null
+                                    Provider.of<Auth>(context, listen: false)
+                                        .login(_emailFieldController.text,
+                                            _passwordFieldController.text)
+                                        .then((User user) => user
+                                                    .emailVerifiedAtObj ==
+                                                null
                                             ? Navigator.pushReplacementNamed(
                                                 context, '/auth/validate-email')
                                             : Navigator.pushReplacementNamed(
                                                 context, '/home'))
-                                    .catchError((e) => print("login error $e"));
+                                        .catchError(
+                                            (e) => print("login error: $e"));
+                                  },
+                                  child: const Text('Log in'),
+                                ),
+                              ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 50,
+                            child: FlatButton(
+                              color: Colors.grey[300],
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                    context, '/auth/forgot-password');
                               },
-                              child: const Text('Log in'),
+                              child: const Text('Forgot password'),
                             ),
                           ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    mainAxisSize: MainAxisSize.max,
-                    children: <Widget>[
-                      OutlineButton(
-                        color: Colors.white,
-                        highlightedBorderColor: Colors.green[600],
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/auth/forgot-password');
-                        },
-                        child: const Text('Forgot password'),
+                          SizedBox(
+                            height: 50,
+                            child: FlatButton(
+                              color: Colors.grey[300],
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/auth/register');
+                              },
+                              child: const Text('Register'),
+                            ),
+                          ),
+                        ],
                       ),
-                      OutlineButton(
-                        color: Colors.white,
-                        highlightedBorderColor: Colors.green[600],
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/auth/register');
-                        },
-                        child: const Text('Register'),
-                      ),
-                    ],
-                  ),
-                  RaisedButton(
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/home');
-                    },
-                    child: const Text('Visit'),
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildEmailInput(BuildContext context) {
+    return ColumboFormField(
+      controller: _emailFieldController,
+      validator: Provider.of<Validator>(context, listen: false).email,
+      decoration: const InputDecoration(
+        labelText: 'Email',
+        prefixIcon: Icon(Icons.alternate_email),
+      ),
+      keyboardType: TextInputType.emailAddress,
+    );
+  }
+
+  Widget buildPasswordField(BuildContext context) {
+    return ColumboFormField(
+      controller: _passwordFieldController,
+      validator: Provider.of<Validator>(context, listen: false).password,
+      decoration: const InputDecoration(
+        labelText: 'Password',
+        prefixIcon: Icon(Icons.lock),
+      ),
+      obscureText: true,
     );
   }
 }
