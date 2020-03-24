@@ -101,9 +101,9 @@ class _ValidateEmailState extends State<ValidateEmail> {
                         Scaffold.of(context).showSnackBar(
                           const SnackBar(
                             content: Padding(
-                              padding: EdgeInsets.all(8.0),
+                              padding: EdgeInsets.all(8),
                               child: Text(
-                                'Your email is not yet verified.\n'
+                                'Your email is not verified yet.\n'
                                 'Try again later.',
                               ),
                             ),

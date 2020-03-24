@@ -35,7 +35,8 @@ abstract class User implements Built<User, UserBuilder> {
 
   @nullable
   @memoized
-  String get birthDate => DateFormat('dd/MM/y').format(birthDateObj);
+  String get birthDate =>
+      birthDateObj == null ? null : DateFormat('dd/MM/y').format(birthDateObj);
 
   @nullable
   String get description;
@@ -52,8 +53,9 @@ abstract class User implements Built<User, UserBuilder> {
 
   @nullable
   @memoized
-  String get emailVerifiedAt =>
-      DateFormat('dd/MM/y').format(emailVerifiedAtObj);
+  String get emailVerifiedAt => emailVerifiedAtObj == null
+      ? null
+      : DateFormat('dd/MM/y').format(emailVerifiedAtObj);
 
   factory User([void Function(UserBuilder) updates]) = _$User;
 
