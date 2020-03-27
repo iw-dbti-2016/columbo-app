@@ -1,9 +1,14 @@
-import 'package:Columbo/widgets/markdown.dart';
+import 'package:Columbo/widgets/sections/image_map.dart';
+import 'package:Columbo/widgets/sections/location_temperature.dart';
+import 'package:Columbo/widgets/sections/publish_info.dart';
+import 'package:Columbo/widgets/sections/section_content.dart';
+import 'package:Columbo/widgets/sections/time_header.dart';
 import 'package:flutter/material.dart';
 
 import 'package:Columbo/models/section.dart';
 import 'package:Columbo/widgets/columbo_scaffold.dart';
 import 'package:Columbo/services/network.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class SectionList extends StatefulWidget {
   const SectionList({Key key}) : super(key: key);
@@ -16,6 +21,7 @@ class _SectionListState extends State<SectionList> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
   dynamic sections;
+  final PageController _pageController = PageController();
 
   @override
   void initState() {
@@ -31,7 +37,41 @@ class _SectionListState extends State<SectionList> {
         child: RefreshIndicator(
           key: _refreshIndicatorKey,
           onRefresh: _refreshList,
-          child: _buildList(),
+          child: Column(
+            children: <Widget>[
+              // PLANNING EXPANDABLE,
+              Placeholder(
+                color: Colors.grey[300],
+                fallbackHeight: 50,
+                strokeWidth: 1,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    top: 12, bottom: 5, left: 5, right: 5),
+                child: SmoothPageIndicator(
+                  controller: _pageController,
+                  count: sections.length as int,
+                  effect: ScrollingDotsEffect(
+                    activeDotColor: Colors.green[600],
+                    dotColor: Colors.grey[300],
+                    dotHeight: 10,
+                    dotWidth: 10,
+                    fixedCenter: true,
+                    activeDotScale: 1.1,
+                    maxVisibleDots: 19,
+                    strokeWidth: 2,
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 6),
+                child: Divider(
+                  height: 1,
+                ),
+              ),
+              Flexible(child: _buildList()),
+            ],
+          ),
         ),
       ),
     );
@@ -50,132 +90,60 @@ class _SectionListState extends State<SectionList> {
         child: CircularProgressIndicator(),
       );
     } else {
-      return ListView.separated(
+      return PageView.builder(
+        controller: _pageController,
+        pageSnapping: true,
+        scrollDirection: Axis.horizontal,
         physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: sections.length,
         itemBuilder: (context, index) {
-          return _buildListItem(sections[index]);
+          return _buildListItem(sections[index] as Section);
         },
-        separatorBuilder: (context, index) {
-          return const Divider(
-            color: Colors.grey,
-          );
-        },
+        itemCount: sections.length as int,
       );
     }
   }
 
   Widget _buildListItem(Section section) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 20, left: 15, right: 15),
-      child: ListTile(
-        title: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(left: 4, right: 4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'start',
-                    style: Theme.of(context).textTheme.headline6,
-                  ),
-                  Text(
-                    'end',
-                    style: Theme.of(context).textTheme.headline6,
-                  ),
-                ],
+    return Column(
+      children: <Widget>[
+        Material(
+          elevation: 3,
+          child: Column(
+            children: <Widget>[
+              // TIME (start-end)
+              Padding(
+                padding: const EdgeInsets.only(
+                    top: 5, left: 20, right: 20, bottom: 10),
+                child: TimeHeader(section),
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  section.startTime,
-                  style: Theme.of(context).textTheme.headline1,
-                ),
-                const Divider(),
-                Text(
-                  section.endTime,
-                  style: Theme.of(context).textTheme.headline1,
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
-        key: Key(section.id.toString()),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Icon(
-                        Icons.wb_sunny,
-                        size: 25,
-                        color: Colors.yellow[900],
-                      ),
-                      Text(
-                        ' ${section.temperature}°C',
-                        style: Theme.of(context).textTheme.headline2,
-                      ),
-                    ],
-                  ),
-                  if (section.isDraft)
-                    Chip(
-                      label: const Text('Draft'),
-                      padding: const EdgeInsets.all(6),
-                      backgroundColor: Colors.green[600],
-                      labelStyle: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w300,
-                      ),
-                    ),
-                ],
+        Flexible(
+          child: ListView(
+            children: <Widget>[
+              // IMAGE/MAP
+              ImageAndMap(section),
+              // LOCATION + TEMPERATURE
+              Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 15),
+                child: LocationTemperature(section),
               ),
-            ),
-            MarkDownText(
-              section.content,
-              key: Key('section-${section.id}'),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 5),
-              child: Text(
-                'published at ${section.publishedAt}',
-                style: Theme.of(context).textTheme.headline6,
+              // PARSED CONTENT
+              Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 15),
+                child: SectionContent(section),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  IconButton(
-                    icon: Icon(Icons.star_border),
-                    iconSize: 30,
-                    onPressed: () {},
-                  ),
-                  OutlineButton(
-                    onPressed: () {},
-                    child: const Text('Read More'),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.bookmark_border),
-                    iconSize: 30,
-                    onPressed: () {},
-                  ),
-                ],
+              // NAME + PUBLISHED AT HUMAN READABLE
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 20, right: 20, top: 15, bottom: 20),
+                child: PublishInfo(section),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
