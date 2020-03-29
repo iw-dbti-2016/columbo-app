@@ -1,3 +1,6 @@
+import 'package:Columbo/models/locationable.dart';
+import 'package:Columbo/models/report.dart';
+import 'package:Columbo/models/user.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 import 'package:intl/intl.dart';
@@ -39,6 +42,15 @@ abstract class Section implements Built<Section, SectionBuilder> {
   @memoized
   String get publishedAt =>
       DateFormat('dd/MM/y HH:mm:ss').format(publishedAtObj);
+
+  @nullable
+  Report get report;
+
+  @nullable
+  User get owner;
+
+  @nullable
+  Locationable get locationable;
 
   factory Section([void Function(SectionBuilder) updates]) = _$Section;
 

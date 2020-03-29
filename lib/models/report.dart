@@ -1,3 +1,7 @@
+import 'package:Columbo/models/plan.dart';
+import 'package:Columbo/models/section.dart';
+import 'package:Columbo/models/trip.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 import 'package:intl/intl.dart';
@@ -28,6 +32,15 @@ abstract class Report implements Built<Report, ReportBuilder> {
   @memoized
   String get publishedAt =>
       DateFormat('dd/MM/y HH:mm:ss').format(publishedAtObj);
+
+  @nullable
+  Trip get trip;
+
+  @nullable
+  BuiltList<Section> get sections;
+
+  @nullable
+  Plan get plan;
 
   factory Report([void Function(ReportBuilder) updates]) = _$Report;
 
